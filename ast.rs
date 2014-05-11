@@ -52,12 +52,12 @@ pub enum ComponentValue {
     CDC,  // -->
 
     // Function
-    Function(~str, ~[ComponentValue]),  // name, arguments
+    Function(~str, Vec<ComponentValue>),  // name, arguments
 
     // Simple block
-    ParenthesisBlock(~[ComponentValue]),  // (…)
-    SquareBracketBlock(~[ComponentValue]),  // […]
-    CurlyBracketBlock(~[Node]),  // {…}
+    ParenthesisBlock(Vec<ComponentValue>),  // (…)
+    SquareBracketBlock(Vec<ComponentValue>),  // […]
+    CurlyBracketBlock(Vec<Node>),  // {…}
 
     // These are always invalid
     BadURL,
@@ -72,23 +72,23 @@ pub enum ComponentValue {
 pub struct Declaration {
     pub location: SourceLocation,
     pub name: ~str,
-    pub value: ~[ComponentValue],
+    pub value: Vec<ComponentValue>,
     pub important: bool,
 }
 
 #[deriving(Eq)]
 pub struct QualifiedRule {
     pub location: SourceLocation,
-    pub prelude: ~[ComponentValue],
-    pub block: ~[Node],
+    pub prelude: Vec<ComponentValue>,
+    pub block: Vec<Node>,
 }
 
 #[deriving(Eq)]
 pub struct AtRule {
     pub location: SourceLocation,
     pub name: ~str,
-    pub prelude: ~[ComponentValue],
-    pub block: Option<~[Node]>,
+    pub prelude: Vec<ComponentValue>,
+    pub block: Option<Vec<Node>>,
 }
 
 #[deriving(Eq)]
@@ -156,9 +156,9 @@ pub trait MoveSkipWhitespaceIterable {
     fn move_skip_whitespace(self) -> MoveSkipWhitespaceIterator;
 }
 
-impl MoveSkipWhitespaceIterable for ~[ComponentValue] {
+impl MoveSkipWhitespaceIterable for Vec<ComponentValue> {
     fn move_skip_whitespace(self) -> MoveSkipWhitespaceIterator {
-        MoveSkipWhitespaceIterator{ iter_with_whitespace: self.move_iter() }
+        MoveSkipWhitespaceIterator{ iter_with_whitespace: self.slice_from(0).move_iter() }
     }
 }
 

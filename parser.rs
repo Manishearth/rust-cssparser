@@ -175,7 +175,7 @@ for DeclarationListParser<T> {
 
 fn parse_at_rule<T: Iterator<Node>>(iter: &mut T, name: ~str, location: SourceLocation)
                  -> AtRule {
-    let mut prelude = ~[];
+    let mut prelude = vec!();
     let mut block = None;
     for_iter!(iter, (component_value, _location), {
         match component_value {
@@ -193,10 +193,10 @@ fn parse_qualified_rule<T: Iterator<Node>>(iter: &mut T, first: ComponentValue,
                                            -> Result<QualifiedRule, SyntaxError> {
     match first {
         CurlyBracketBlock(content)
-        => return Ok(QualifiedRule { location: location, prelude: ~[], block: content }),
+        => return Ok(QualifiedRule { location: location, prelude: vec!(), block: content }),
         _ => (),
     }
-    let mut prelude = ~[first];
+    let mut prelude = vec!(first);
     for_iter!(iter, (component_value, _location), {
         match component_value {
             CurlyBracketBlock(content)
@@ -219,7 +219,7 @@ fn parse_declaration<T: Iterator<Node>>(iter: &mut T, first: ComponentValue,
         Some((Colon, _)) => (),
         _ => return error(location, ErrInvalidDeclarationSyntax),
     }
-    let mut value = ~[];
+    let mut value = vec!();
     let mut important = false;
     for_iter!(iter, (component_value, _location), {
         match component_value {
