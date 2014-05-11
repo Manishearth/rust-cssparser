@@ -7,13 +7,13 @@ use ast::*;
 
 
 impl ast::ComponentValue {
-    pub fn to_css(&mut self) -> ~str {
-        let mut css = "".to_owned();
+    pub fn to_css(&mut self) -> StrBuf {
+        let mut css = StrBuf::new();
         self.to_css_push(&mut css);
         css
     }
 
-    pub fn to_css_push(&self, css: &mut ~str) {
+    pub fn to_css_push(&self, css: &mut StrBuf) {
         match *self {
             Ident(ref value) => serialize_identifier(value.as_slice(), css),
             AtKeyword(ref value) => {
@@ -109,7 +109,7 @@ impl ast::ComponentValue {
 }
 
 
-pub fn serialize_identifier(value: &str, css: &mut ~str) {
+pub fn serialize_identifier(value: &str, css: &mut StrBuf) {
     // TODO: avoid decoding/re-encoding UTF-8?
     let mut iter = value.chars();
     let mut c = iter.next().unwrap();
@@ -127,7 +127,7 @@ pub fn serialize_identifier(value: &str, css: &mut ~str) {
 
 
 #[inline]
-fn serialize_char(c: char, css: &mut ~str, is_identifier_start: bool) {
+fn serialize_char(c: char, css: &mut StrBuf, is_identifier_start: bool) {
     match c {
         '0'..'9' if is_identifier_start => css.push_str(format!("\\\\3{} ", c)),
         '-' if is_identifier_start => css.push_str("\\-"),
@@ -141,7 +141,7 @@ fn serialize_char(c: char, css: &mut ~str, is_identifier_start: bool) {
 }
 
 
-pub fn serialize_string(value: &str, css: &mut ~str) {
+pub fn serialize_string(value: &str, css: &mut StrBuf) {
     css.push_char('"');
     // TODO: avoid decoding/re-encoding UTF-8?
     for c in value.chars() {
@@ -159,18 +159,18 @@ pub fn serialize_string(value: &str, css: &mut ~str) {
 
 
 pub trait ToCss {
-    fn to_css(&mut self) -> ~str {
-        let mut css = "".to_owned();
+    fn to_css(&mut self) -> StrBuf {
+        let mut css = StrBuf::new();
         self.to_css_push(&mut css);
         css
     }
 
-    fn to_css_push(&mut self, css: &mut ~str);
+    fn to_css_push(&mut self, css: &mut StrBuf);
 }
 
 
 impl<'a, I: Iterator<&'a ComponentValue>> ToCss for I {
-    fn to_css_push(&mut self, css: &mut ~str) {
+    fn to_css_push(&mut self, css: &mut StrBuf) {
         let mut previous = match self.next() {
             None => return,
             Some(first) => { first.to_css_push(css); first }
