@@ -391,7 +391,7 @@ impl ToJson for ComponentValue {
             match *value {
                 NumericValue{representation: ref r, value: ref v, int_value: ref i}
                 => ~[r.to_json(), v.to_json(),
-                     JString(match *i { Some(_) => "integer".to_owned(), _ => ~"number" })]
+                     JString(match *i { Some(_) => "integer".to_owned(), _ => "number".to_owned() })]
             }
         }
 
@@ -400,7 +400,7 @@ impl ToJson for ComponentValue {
             AtKeyword(ref value) => JList(~[JString("at-keyword".to_owned()), value.to_json()]),
             Hash(ref value) => JList(~[JString("hash".to_owned()), value.to_json(),
                                        JString("unrestricted".to_owned())]),
-            IDHash(ref value) => JList(~[JString("hash".to_owned()), value.to_json(), JString(~"id")]),
+            IDHash(ref value) => JList(~[JString("hash".to_owned()), value.to_json(), JString("id".to_owned())]),
             String(ref value) => JList(~[JString("string".to_owned()), value.to_json()]),
             URL(ref value) => JList(~[JString("url".to_owned()), value.to_json()]),
             Delim('\\') => JString("\\".to_owned()),
@@ -437,11 +437,11 @@ impl ToJson for ComponentValue {
             CurlyBracketBlock(ref content)
             => JList(~[JString("{}".to_owned())] + list_to_json(content)),
 
-            BadURL => JList(~[JString("error".to_owned()), JString(~"bad-url")]),
-            BadString => JList(~[JString("error".to_owned()), JString(~"bad-string")]),
-            CloseParenthesis => JList(~[JString("error".to_owned()), JString(~")")]),
-            CloseSquareBracket => JList(~[JString("error".to_owned()), JString(~"]")]),
-            CloseCurlyBracket => JList(~[JString("error".to_owned()), JString(~"}")]),
+            BadURL => JList(~[JString("error".to_owned()), JString("bad-url".to_owned())]),
+            BadString => JList(~[JString("error".to_owned()), JString("bad-string".to_owned())]),
+            CloseParenthesis => JList(~[JString("error".to_owned()), JString(")".to_owned())]),
+            CloseSquareBracket => JList(~[JString("error".to_owned()), JString("]".to_owned())]),
+            CloseCurlyBracket => JList(~[JString("error".to_owned()), JString("}".to_owned())]),
         }
     }
 }
