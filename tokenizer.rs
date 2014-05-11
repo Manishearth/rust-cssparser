@@ -40,9 +40,9 @@ fn preprocess(input: &str) -> ~str {
 
 #[test]
 fn test_preprocess() {
-    assert!(preprocess("") == ~"");
+    assert!(preprocess("") == "".to_owned());
     assert!(preprocess("Lorem\r\n\t\x00ipusm\ndoror\uFFFD\r")
-            == ~"Lorem\n\t\uFFFDipusm\ndoror\uFFFD\n");
+            == "Lorem\n\t\uFFFDipusm\ndoror\uFFFD\n".to_owned());
 }
 
 
@@ -316,7 +316,7 @@ fn consume_string(tokenizer: &mut Tokenizer, single_quote: bool) -> ComponentVal
 // Return None on syntax error (ie. unescaped newline)
 fn consume_quoted_string(tokenizer: &mut Tokenizer, single_quote: bool) -> Option<~str> {
     tokenizer.position += 1;  // Skip the initial quote
-    let mut string: ~str = ~"";
+    let mut string: ~str = "".to_owned();
     while !tokenizer.is_eof() {
         match tokenizer.consume_char() {
             '"' if !single_quote => break,
@@ -368,7 +368,7 @@ fn consume_ident_like(tokenizer: &mut Tokenizer) -> ComponentValue {
 }
 
 fn consume_name(tokenizer: &mut Tokenizer) -> ~str {
-    let mut value = ~"";
+    let mut value = "".to_owned();
     while !tokenizer.is_eof() {
         let c = tokenizer.current_char();
         value.push_char(match c {
@@ -389,7 +389,7 @@ fn consume_name(tokenizer: &mut Tokenizer) -> ~str {
 fn consume_numeric(tokenizer: &mut Tokenizer) -> ComponentValue {
     // Parse [+-]?\d*(\.\d+)?([eE][+-]?\d+)?
     // But this is always called so that there is at least one digit in \d*(\.\d+)?
-    let mut representation = ~"";
+    let mut representation = "".to_owned();
     let mut is_integer = true;
     if is_match!(tokenizer.current_char(), '-' | '+') {
          representation.push_char(tokenizer.consume_char())
@@ -471,7 +471,7 @@ fn consume_url(tokenizer: &mut Tokenizer) -> ComponentValue {
             _ => return consume_unquoted_url(tokenizer),
         }
     }
-    return URL(~"");
+    return URL("".to_owned());
 
     fn consume_quoted_url(tokenizer: &mut Tokenizer, single_quote: bool) -> ComponentValue {
         match consume_quoted_string(tokenizer, single_quote) {
@@ -481,7 +481,7 @@ fn consume_url(tokenizer: &mut Tokenizer) -> ComponentValue {
     }
 
     fn consume_unquoted_url(tokenizer: &mut Tokenizer) -> ComponentValue {
-        let mut string = ~"";
+        let mut string = "".to_owned();
         while !tokenizer.is_eof() {
             let next_char = match tokenizer.consume_char() {
                 ' ' | '\t' => return consume_url_end(tokenizer, string),
@@ -535,7 +535,7 @@ fn consume_url(tokenizer: &mut Tokenizer) -> ComponentValue {
 
 fn consume_unicode_range(tokenizer: &mut Tokenizer) -> ComponentValue {
     tokenizer.position += 2;  // Skip U+
-    let mut hex = ~"";
+    let mut hex = "".to_owned();
     while hex.len() < 6 && !tokenizer.is_eof()
           && is_match!(tokenizer.current_char(), '0'..'9' | 'A'..'F' | 'a'..'f') {
         hex.push_char(tokenizer.consume_char());
@@ -554,7 +554,7 @@ fn consume_unicode_range(tokenizer: &mut Tokenizer) -> ComponentValue {
         end = num::from_str_radix(hex + "F".repeat(question_marks), 16).unwrap();
     } else {
         start = num::from_str_radix(hex, 16).unwrap();
-        hex = ~"";
+        hex = "".to_owned();
         if !tokenizer.is_eof() && tokenizer.current_char() == '-' {
             tokenizer.position += 1;
             while hex.len() < 6 && !tokenizer.is_eof() {

@@ -8,7 +8,7 @@ use ast::*;
 
 impl ast::ComponentValue {
     pub fn to_css(&mut self) -> ~str {
-        let mut css = ~"";
+        let mut css = "".to_owned();
         self.to_css_push(&mut css);
         css
     }
@@ -160,7 +160,7 @@ pub fn serialize_string(value: &str, css: &mut ~str) {
 
 pub trait ToCss {
     fn to_css(&mut self) -> ~str {
-        let mut css = ~"";
+        let mut css = "".to_owned();
         self.to_css_push(&mut css);
         css
     }
