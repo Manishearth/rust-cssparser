@@ -20,9 +20,9 @@ use std::ascii::StrAsciiExt;
 use ast::*;
 
 
-pub struct StylesheetParser<T>{ priv iter: T }
-pub struct RuleListParser<T>{ priv iter: T }
-pub struct DeclarationListParser<T>{ priv iter: T }
+pub struct StylesheetParser<T>{ iter: T }
+pub struct RuleListParser<T>{ iter: T }
+pub struct DeclarationListParser<T>{ iter: T }
 
 /// Parse top-level of a CSS stylesheet.
 /// Return a Iterator<Result<Rule, SyntaxError>>

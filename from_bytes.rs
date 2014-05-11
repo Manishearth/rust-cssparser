@@ -73,7 +73,7 @@ pub fn decode_stylesheet_bytes(css: &[u8], protocol_encoding_label: Option<&str>
 #[inline]
 fn decode_replace(input: &[u8], fallback_encoding: EncodingRef)-> (~str, EncodingRef) {
     let (result, used_encoding) = decode(input, DecodeReplace, fallback_encoding);
-    (result.unwrap(), used_encoding)
+    (result.unwrap().to_owned(), used_encoding)
 }
 
 
