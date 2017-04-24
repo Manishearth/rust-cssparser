@@ -387,14 +387,14 @@ fn clamp_i32(val: i32) -> u8 {
 }
 
 fn clamp_f32(val: f32) -> u8 {
-    // Scale by 256, not 255, so that each of the 256 u8 values has an equal range
-    // of f32 values mapping to it. Floor before clamping.
+    // Round, not floor, so that each of the 256 u8 values has an equal range
+    // of f32 values mapping to it.
     //
-    // Clamping to 256 and flooring after would let 1.0 map to 256, and
+    // Clamping to 256 and rounding after would let 1.0 map to 256, and
     // `256.0_f32 as u8` is undefined behavior:
     //
     // https://github.com/rust-lang/rust/issues/10184
-    (val * 256.).floor().max(0.).min(255.) as u8
+    (val * 255.).round().max(0.).min(255.) as u8
 }
 
 #[inline]
