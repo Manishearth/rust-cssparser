@@ -192,7 +192,7 @@ impl<'i, 't> Parser<'i, 't> {
     /// This ignores whitespace and comments.
     #[inline]
     pub fn is_exhausted(&mut self) -> bool {
-        self.expect_exhausted().is_ok()
+        self.expect_exhausted::<()>().is_ok()
     }
 
     /// Check whether the input is exhausted. That is, if `.next()` would return a token.
@@ -202,7 +202,7 @@ impl<'i, 't> Parser<'i, 't> {
     #[inline]
     pub fn expect_exhausted<E>(&mut self) -> Result<(), ParseError<'i, E>> {
         let start_position = self.position();
-        let result = match self.next() {
+        let result = match self.next::<E>() {
             Err(_) => Ok(()), //XXXjdm swallowing non-UnexpectedEof errors seems wrong, but tests fail
             Ok(t) => Err(ParseError::UnexpectedToken(t)),
         };
@@ -376,7 +376,7 @@ impl<'i, 't> Parser<'i, 't> {
         let mut values = vec![];
         loop {
             values.push(try!(self.parse_until_before(Delimiter::Comma, |parser| parse_one(parser))));
-            match self.next() {
+            match self.next::<E>() {
                 Err(_) => return Ok(values),
                 Ok(Token::Comma) => continue,
                 Ok(_) => unreachable!(),
@@ -686,7 +686,7 @@ impl<'i, 't> Parser<'i, 't> {
     #[inline]
     pub fn expect_no_error_token<E>(&mut self) -> Result<(), ParseError<'i, E>> {
         loop {
-            match self.next_including_whitespace_and_comments() {
+            match self.next_including_whitespace_and_comments::<E>() {
                 Ok(Token::Function(_)) | Ok(Token::ParenthesisBlock) |
                 Ok(Token::SquareBracketBlock) | Ok(Token::CurlyBracketBlock) => {
                     try!(self.parse_nested_block(|input| input.expect_no_error_token()))

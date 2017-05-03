@@ -69,7 +69,7 @@ fn parse_tokens<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<(), ParseError<
         }
         Token::Number(_) => {
             let after_number = input.position();
-            match input.next_including_whitespace() {
+            match input.next_including_whitespace::<()>() {
                 Ok(Token::Delim('?')) => parse_question_marks(input),
                 Ok(Token::Dimension(..)) => {}
                 Ok(Token::Number(_)) => {}
@@ -85,7 +85,7 @@ fn parse_tokens<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<(), ParseError<
 fn parse_question_marks(input: &mut Parser) {
     loop {
         let position = input.position();
-        match input.next_including_whitespace() {
+        match input.next_including_whitespace::<()>() {
             Ok(Token::Delim('?')) => {}
             _ => {
                 input.reset(position);

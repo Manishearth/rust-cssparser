@@ -68,7 +68,7 @@ pub fn parse_nth<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<(i32, i32), Pa
 
 fn parse_b<'i, 't, E>(input: &mut Parser<'i, 't>, a: i32) -> Result<(i32, i32), ParseError<'i, E>> {
     let start_position = input.position();
-    let token = input.next();
+    let token = input.next::<()>();
     match token {
         Ok(Token::Delim('+')) => Ok(try!(parse_signless_b(input, a, 1))),
         Ok(Token::Delim('-')) => Ok(try!(parse_signless_b(input, a, -1))),

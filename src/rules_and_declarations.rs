@@ -339,11 +339,7 @@ where P: QualifiedRuleParser<QualifiedRule = R, Error = E> + AtRuleParser<AtRule
                     self.any_rule_so_far = true;
                     if first_stylesheet_rule && name.eq_ignore_ascii_case("charset") {
                         let delimiters = Delimiter::Semicolon | Delimiter::CurlyBracketBlock;
-                        fn everything_is_fine<'ii, 'tt: 'ii, E: 'ii>(_: &mut Parser<'ii, 'tt>)
-                                                             -> Result<(), ParseError<'ii, E>> {
-                            Ok(())
-                        }
-                        let _ = self.input.parse_until_after(delimiters, everything_is_fine);
+                        let _: Result<(), ParseError<()>> = self.input.parse_until_after(delimiters, |_| Ok(()));
                     } else {
                         return Some(parse_at_rule(start_position, name, self.input, &mut self.parser))
                     }
@@ -417,7 +413,7 @@ fn parse_at_rule<'i, 't, P, E>(start_position: SourcePosition, name: Cow<str>,
     });
     match result {
         Ok(AtRuleType::WithoutBlock(rule)) => {
-            match input.next() {
+            match input.next::<E>() {
                 Ok(Token::Semicolon) | Err(_) => Ok(rule),
                 Ok(Token::CurlyBracketBlock) => Err(PreciseParseError {
                     error: ParseError::UnexpectedToken(Token::CurlyBracketBlock),
@@ -427,7 +423,7 @@ fn parse_at_rule<'i, 't, P, E>(start_position: SourcePosition, name: Cow<str>,
             }
         }
         Ok(AtRuleType::WithBlock(prelude)) => {
-            match input.next() {
+            match input.next::<E>() {
                 Ok(Token::CurlyBracketBlock) => {
                     input.parse_nested_block(move |input| parser.parse_block(prelude, input))
                         .map_err(|e| PreciseParseError {
@@ -447,7 +443,7 @@ fn parse_at_rule<'i, 't, P, E>(start_position: SourcePosition, name: Cow<str>,
             }
         }
         Ok(AtRuleType::OptionalBlock(prelude)) => {
-            match input.next() {
+            match input.next::<E>() {
                 Ok(Token::Semicolon) | Err(_) => Ok(parser.rule_without_block(prelude)),
                 Ok(Token::CurlyBracketBlock) => {
                     input.parse_nested_block(/*move*/ |input| parser.parse_block(prelude, input))
