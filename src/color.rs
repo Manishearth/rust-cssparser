@@ -137,7 +137,7 @@ impl Color {
     /// Parse a <color> value, per CSS Color Module Level 3.
     ///
     /// FIXME(#2) Deprecated CSS2 System Colors are not supported yet.
-    pub fn parse<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Color, ParseError<'i>> {
+    pub fn parse<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<Color, ParseError<'i, E>> {
         let token = try!(input.next());
         match token {
             Token::Hash(ref value) | Token::IDHash(ref value) => parse_color_hash(&*value),
@@ -399,7 +399,7 @@ fn clamp_f32(val: f32) -> u8 {
 }
 
 #[inline]
-fn parse_color_function<'i, 't>(name: &str, arguments: &mut Parser<'i, 't>) -> Result<Color, ParseError<'i>> {
+fn parse_color_function<'i, 't, E>(name: &str, arguments: &mut Parser<'i, 't>) -> Result<Color, ParseError<'i, E>> {
     let (red, green, blue, uses_commas) = match_ignore_ascii_case! { name,
         "rgb" | "rgba" => parse_rgb_components_rgb(arguments)?,
         "hsl" | "hsla" => parse_rgb_components_hsl(arguments)?,
@@ -437,7 +437,7 @@ fn parse_color_function<'i, 't>(name: &str, arguments: &mut Parser<'i, 't>) -> R
 
 
 #[inline]
-fn parse_rgb_components_rgb<'i, 't>(arguments: &mut Parser<'i, 't>) -> Result<(u8, u8, u8, bool), ParseError<'i>> {
+fn parse_rgb_components_rgb<'i, 't, E>(arguments: &mut Parser<'i, 't>) -> Result<(u8, u8, u8, bool), ParseError<'i, E>> {
     let red: u8;
     let green: u8;
     let blue: u8;
@@ -482,7 +482,7 @@ fn parse_rgb_components_rgb<'i, 't>(arguments: &mut Parser<'i, 't>) -> Result<(u
 }
 
 #[inline]
-fn parse_rgb_components_hsl<'i, 't>(arguments: &mut Parser<'i, 't>) -> Result<(u8, u8, u8, bool), ParseError<'i>> {
+fn parse_rgb_components_hsl<'i, 't, E>(arguments: &mut Parser<'i, 't>) -> Result<(u8, u8, u8, bool), ParseError<'i, E>> {
     let mut uses_commas = false;
     // Hue given as an angle
     // https://drafts.csswg.org/css-values/#angles

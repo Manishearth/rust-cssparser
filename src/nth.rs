@@ -11,7 +11,7 @@ use super::{Token, Parser, ParseError};
 /// The input is typically the arguments of a function,
 /// in which case the caller needs to check if the arguments’ parser is exhausted.
 /// Return `Ok((A, B))`, or `Err(())` for a syntax error.
-pub fn parse_nth<'i, 't>(input: &mut Parser<'i, 't>) -> Result<(i32, i32), ParseError<'i>> {
+pub fn parse_nth<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<(i32, i32), ParseError<'i, E>> {
     let token = try!(input.next());
     match token {
         Token::Number(ref value) => {
@@ -66,7 +66,7 @@ pub fn parse_nth<'i, 't>(input: &mut Parser<'i, 't>) -> Result<(i32, i32), Parse
 }
 
 
-fn parse_b<'i, 't>(input: &mut Parser<'i, 't>, a: i32) -> Result<(i32, i32), ParseError<'i>> {
+fn parse_b<'i, 't, E>(input: &mut Parser<'i, 't>, a: i32) -> Result<(i32, i32), ParseError<'i, E>> {
     let start_position = input.position();
     let token = input.next();
     match token {
@@ -85,7 +85,7 @@ fn parse_b<'i, 't>(input: &mut Parser<'i, 't>, a: i32) -> Result<(i32, i32), Par
     }.map_err(|()| ParseError::UnexpectedToken(token.unwrap()))
 }
 
-fn parse_signless_b<'i, 't>(input: &mut Parser<'i, 't>, a: i32, b_sign: i32) -> Result<(i32, i32), ParseError<'i>> {
+fn parse_signless_b<'i, 't, E>(input: &mut Parser<'i, 't>, a: i32, b_sign: i32) -> Result<(i32, i32), ParseError<'i, E>> {
     let token = try!(input.next());
     match token {
         Token::Number(ref value) if !value.has_sign => {

@@ -24,7 +24,7 @@ pub struct UnicodeRange {
 
 impl UnicodeRange {
     /// https://drafts.csswg.org/css-syntax/#urange-syntax
-    pub fn parse<'i, 't>(input: &mut Parser<'i, 't>) -> Result<Self, ParseError<'i>> {
+    pub fn parse<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<Self, ParseError<'i, E>> {
         // <urange> =
         //   u '+' <ident-token> '?'* |
         //   u <dimension-token> '?'* |
@@ -54,7 +54,7 @@ impl UnicodeRange {
     }
 }
 
-fn parse_tokens<'i, 't>(input: &mut Parser<'i, 't>) -> Result<(), ParseError<'i>> {
+fn parse_tokens<'i, 't, E>(input: &mut Parser<'i, 't>) -> Result<(), ParseError<'i, E>> {
     match input.next_including_whitespace()? {
         Token::Delim('+') => {
             match input.next_including_whitespace()? {
